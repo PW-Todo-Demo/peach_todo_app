@@ -1,8 +1,8 @@
 {
-  "key": "APP_KEY",
+  "key": "todo_app",
   "framework": {
     "angular": {
-      "module": "APP_MODULE_NAME",
+      "module": "todoApp",
       "version": "1.5.8"
     }
   }

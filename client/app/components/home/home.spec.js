@@ -1,7 +1,7 @@
 import peachApp from '../../app';
-import Intro from './intro';
+import Home from './home';
 
-describe('Component: Intro', () => {
+describe('Component: Home', () => {
   let $rootScope, $controller, ctrl;
 
   beforeEach(angular.mock.module(peachApp));
@@ -9,13 +9,13 @@ describe('Component: Intro', () => {
   beforeEach(angular.mock.inject(($injector) => {
     $rootScope = $injector.get('$rootScope');
     $controller = $injector.get('$controller');
-    ctrl = $controller(Intro.controllerName, {});
+    ctrl = $controller(Home.controllerName, {});
   }));
 
   describe('Constructor', () => {
 
-    it('should construct a Intro Controller', () => {
-      expect(ctrl.title).to.be.equals('Intro Page');
+    it('should construct a Home Controller', () => {
+      expect(ctrl.title).to.be.equals('Home Page');
     });
   });
 

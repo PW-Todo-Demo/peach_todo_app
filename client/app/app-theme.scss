@@ -1,0 +1,30 @@
+/* This file will never contain any styles
+besides the overrides needed to configure a theme */
+
+$theme-color-primary: #285d75;
+
+md-toolbar.peach-toolbar .apps-box .apps-row .app-icon.active a .icon {
+  color: $theme-color-primary;
+}
+
+md-toolbar.peach-toolbar .mobile-app-box .app-icon.active a .icon {
+  color: $theme-color-primary;
+}
+
+md-toolbar.peach-toolbar .mobile-app-box .app-icon.active a p {
+  color: $theme-color-primary;
+}
+
+peach-modal-header, *[peach-modal-header] {
+  background-color: $theme-color-primary;
+}
+
+peach-modal-content md-tabs md-tabs-wrapper, *[peach-modal-content] md-tabs md-tabs-wrapper {
+  background-color: $theme-color-primary;
+}
+
+peach-modal-header md-input-container.md-input-invalid [ng-message],
+*[peach-modal-header] md-input-container.md-input-invalid [ng-message] {
+  color: #ffffff;
+}
+    
