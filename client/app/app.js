@@ -20,6 +20,9 @@ import routing from './app.config';
 import Home from './components/home/home';
 import Todo from './components/todo/todo';
 
+// Services
+import TasksService from './common/services/tasks-service/tasks-service';
+
 angular.module(peachRc.framework.angular.module, [
   angularAnimate,
   angularAria,
@@ -28,7 +31,8 @@ angular.module(peachRc.framework.angular.module, [
   angularMaterial,
   angularRoute,
   angularSanitize,
-  'ngPeach.ui' // Need to fix this to export properly from ngPeach
+  'ngPeach.ui', // Need to fix this to export properly from ngPeach
+  TasksService.moduleName
 ])
   .config(routing)
   .controller(Home.controllerName, Home.controller)

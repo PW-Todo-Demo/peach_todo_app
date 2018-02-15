@@ -14,7 +14,7 @@
 
                 <md-list-item ng-repeat="task in $todo.tasks">
                     <span>{{ ::task.description }}</span>
-                    <md-checkbox class="md-secondary" ng-model="task.is_complete"></md-checkbox>
+                    <md-checkbox class="md-secondary" ng-model="task.is_complete" aria-label="Is Complete"></md-checkbox>
                 </md-list-item>
 
             </md-list>

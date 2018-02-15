@@ -1,10 +1,10 @@
-import 'ng-peach';
+import tasksService from '../../common/services/tasks-service/tasks-service';
 
 class TodoController {
 
-  constructor($peach) {
+  constructor($tasks) {
 
-    this.$peach = $peach;
+    this.$tasks = $tasks;
 
     this.page_title = 'ToDo List';
     this.tasks = []; // initialize with empty array
@@ -15,18 +15,16 @@ class TodoController {
 
   activate() {
 
-    let tasksResource = this.$peach.api('tdd_task');
-
-    tasksResource.find()
-      .then((response) => {
-        this.tasks = response.results || this.tasks;
+    this.$tasks.load()
+      .then((tasks) => {
+        this.tasks = tasks;
       });
 
   }
 
 }
 
-TodoController.$inject = ['$peach'];
+TodoController.$inject = [tasksService.serviceName];
 
 export default {
   controller: TodoController,
