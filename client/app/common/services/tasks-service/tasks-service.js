@@ -1,3 +1,4 @@
+import { BaseDataService } from '../base-data-service';
 import { Task } from '../../models/task/task';
 import angular from 'angular';
 import 'ng-peach';
@@ -5,27 +6,15 @@ import 'ng-peach';
 const moduleName = 'tasksService';
 const serviceName = 'tasks';
 
-class TasksService {
+class TasksService extends BaseDataService {
 
-  constructor($peach) {
-
-    this.$peach = $peach;
-    this.$resource = $peach.api(Task.getApiKey());
-
-  }
-
-  load(findParams = null, otherParams = null) {
-
-    return this.$resource.find(findParams, otherParams)
-      .then((response) => {
-        return Task.fromRaw(response.results || []);
-      });
-
+  constructor($peach, $q) {
+    super($peach, $q, Task);
   }
 
 }
 
-TasksService.$inject = ['$peach'];
+TasksService.$inject = ['$peach', '$q'];
 
 angular.module(moduleName, ['ngPeach'])
   .service(serviceName, TasksService);

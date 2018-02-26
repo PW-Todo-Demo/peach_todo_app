@@ -1,8 +1,8 @@
+import { DB_FIELDS } from '../../../app.const';
 import _ from 'lodash';
 
 const API_KEY = 'tdd_task';
 const FIELDS = ['description', 'is_complete', 'location_id'];
-const DB_FIELDS = ['id', 'created_at', 'created_by', 'updated_at', 'updated_by', 'is_deleted', 'uri'];
 
 export class Task {
 
@@ -17,7 +17,15 @@ export class Task {
 
   }
 
-  static fromRaw(data) {
+  forDB() {
+    return _.extend(_.pick(this, FIELDS), {id: this.id});
+  }
+
+  toggleStatus() {
+    this.is_complete = !this.is_complete;
+  }
+
+  static fromRaw(data = null) {
 
     if (_.isArray(data)) {
 
@@ -50,9 +58,11 @@ export class Task {
     return API_KEY;
   }
 
-  static isValid(task) {
+  static isValid(task = null) {
 
-    return _.has(task, 'description') &&
+    return task &&
+      task instanceof Task &&
+      _.has(task, 'description') &&
       _.isString(task.description) &&
       task.description.length <= 256 &&
       _.has(task, 'is_complete') &&
