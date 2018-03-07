@@ -1,5 +1,6 @@
 import Home from './components/home/home';
 import Todo from './components/todo/todo';
+import TodoEdit from './components/todo/todo-edit';
 
 function AppConfig($routeProvider, $httpProvider) {
   $httpProvider.interceptors.push('peachInterceptorAPI');
@@ -17,6 +18,12 @@ function AppConfig($routeProvider, $httpProvider) {
       template: Todo.template,
       controller: Todo.controllerName,
       controllerAs: Todo.controllerAs
+    })
+    .when('/todo/:taskId', {
+      name: TodoEdit.name,
+      template: TodoEdit.template,
+      controller: TodoEdit.controllerName,
+      controllerAs: TodoEdit.controllerAs
     })
     .otherwise({
       redirectTo: '/home'

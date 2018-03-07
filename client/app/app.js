@@ -19,9 +19,11 @@ import routing from './app.config';
 // Components
 import Home from './components/home/home';
 import Todo from './components/todo/todo';
+import TodoEdit from './components/todo/todo-edit';
 
 // Services
 import TasksService from './common/services/tasks-service/tasks-service';
+import UsersService from './common/services/users-service/users-service';
 
 angular.module(peachRc.framework.angular.module, [
   angularAnimate,
@@ -32,10 +34,12 @@ angular.module(peachRc.framework.angular.module, [
   angularRoute,
   angularSanitize,
   'ngPeach.ui', // Need to fix this to export properly from ngPeach
-  TasksService.moduleName
+  TasksService.moduleName,
+  UsersService.moduleName
 ])
   .config(routing)
   .controller(Home.controllerName, Home.controller)
-  .controller(Todo.controllerName, Todo.controller);
+  .controller(Todo.controllerName, Todo.controller)
+  .controller(TodoEdit.controllerName, TodoEdit.controller);
 
 export default peachRc.framework.angular.module;

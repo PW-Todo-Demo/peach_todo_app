@@ -1,5 +1,5 @@
 {
-  "name": "REPOSITORY_NAME",
+  "name": "peach_todo_app",
   "private": true,
   "version": "1.0.0",
   "description": "Peach Application Scaffold",
@@ -8,25 +8,27 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/peachworks/REPOSITORY_NAME.git"
+    "url": "git+https://github.com/PW-Todo-Demo/peach_todo_app.git"
   },
   "author": "YOUR_NAME <YOUR_EMAIL>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/peachworks/REPOSITORY_NAME/issues"
+    "url": "https://github.com/PW-Todo-Demo/peach_todo_app/issues"
   },
-  "homepage": "https://github.com/peachworks/REPOSITORY_NAME#readme",
+  "homepage": "https://github.com/PW-Todo-Demo/peach_todo_app#readme",
   "dependencies": {
     "angular": "1.5.8",
     "angular-animate": "1.5.8",
     "angular-aria": "1.5.8",
     "angular-cache": "4.6.0",
     "angular-cookies": "1.5.8",
-    "angular-material": "1.1.6",
+    "angular-material": "1.1.7",
+    "angular-messages": "1.5.8",
     "angular-route": "1.5.8",
     "angular-sanitize": "1.5.8",
-    "lodash": "4.17.4",
-    "ng-peach": "2.1.14",
+    "lodash": "4.17.5",
+    "moment-timezone": "0.5.14",
+    "ng-peach": "2.1.15",
     "peach.css": "0.7.9"
   },
   "devDependencies": {

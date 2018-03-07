@@ -1,7 +1,9 @@
 import { Task } from '../models/task/task';
+import { User } from '../models/user/user';
+import _ from 'lodash';
 import 'ng-peach';
 
-const SUPPORTED_MODEL_CLASSES = [Task.name];
+const SUPPORTED_MODEL_CLASSES = [Task.name, User.name];
 
 export class BaseDataService {
 
@@ -30,7 +32,11 @@ export class BaseDataService {
 
     return this.$resource.find(findParams, otherParams)
       .then((response) => {
-        return this._modelClass.fromRaw(response.results || []);
+        return this._modelClass.fromRaw(
+          _.has(response, 'id') ?
+            response :
+            _.get(response, 'results', [])
+        );
       });
 
   }

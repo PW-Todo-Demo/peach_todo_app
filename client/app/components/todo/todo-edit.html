@@ -1,0 +1,133 @@
+<peach-modal id="todo-edit-page" loading="$todoEdit.blockers.initializing">
+
+    <peach-modal-header on-close="$todoEdit.actionClose();">
+
+        <h1 ng-if="!$todoEdit.editedTask.id">
+            Add Task
+        </h1>
+
+        <h1 ng-if="$todoEdit.editedTask.id">
+            Edit Task
+        </h1>
+
+    </peach-modal-header>
+
+    <peach-modal-content>
+        
+        <peach-message ng-if="$todoEdit.info.message" type="{{ $todoEdit.info.type }}">
+            {{ $todoEdit.info.message }}
+        </peach-message>
+
+        <form
+          name="$todoEdit.forms.task_data_form"
+          layout="column"
+          flex-gt-sm="50"
+          layout-wrap
+          novalidate="true"
+          autocomplete="off">
+
+            <md-input-container>
+
+                <label>Description</label>
+
+                <textarea
+                  name="description"
+                  ng-model="$todoEdit.editedTask.description"
+                  ng-model-options="$todoEdit.ngModelOptions"
+                  aria-label="Description"
+                  ng-disabled="$todoEdit.disableChanges()"
+                  md-maxlength="256"
+                  md-no-resize >
+                </textarea>
+
+            </md-input-container>
+
+            <md-input-container>
+
+                <label>Assigned User</label>
+                <md-select
+                  name="assignedUserId"
+                  ng-model="$todoEdit.editedTask.assigned_user_id"
+                  ng-model-options="{trackBy: '$value.id'}"
+                  aria-label="Assigned User"
+                  ng-disabled="$todoEdit.disableChanges()"
+                  required
+                >
+                    <md-option
+                      ng-repeat="user in $todoEdit.accountUsers"
+                      ng-value="user">
+                        {{ user.username }}
+                    </md-option>
+                </md-select>
+
+            </md-input-container>
+
+            <md-input-container>
+
+                <label>Due Date</label>
+                <md-datepicker
+                  name="dueDate"
+                  ng-model="$todoEdit.editedTask.due_date"
+                  ng-model-options="$todoEdit.ngModelOptions"
+                  aria-label="Due Date"
+                  ng-disabled="$todoEdit.disableChanges()"
+                  md-min-date="$todoEdit.currentDate"
+                  md-placeholder="Enter date"
+                  md-open-on-focus>
+                </md-datepicker>
+
+            </md-input-container>
+
+            <md-input-container>
+
+                <md-checkbox
+                  md-no-ink
+                  name="isComplete"
+                  ng-model="$todoEdit.editedTask.is_complete"
+                  ng-model-options="$todoEdit.ngModelOptions"
+                  aria-label="Is Complete"
+                  ng-disabled="$todoEdit.disableChanges()">
+                    Is Complete
+                </md-checkbox>
+
+            </md-input-container>
+
+        </form>
+
+    </peach-modal-content>
+
+    <peach-modal-footer loading="$todoEdit.blockers.initializing || $todoEdit.blockers.api_processing">
+
+        <md-button
+          md-no-ink
+          ng-if="$todoEdit.showDeleteButton();"
+          class="md-raised md-warn has-progress"
+          ng-disabled="$todoEdit.disableDeleteButton();"
+          ng-click="$todoEdit.actionConfirmDeleteTask();"
+          aria-label="Delete" >
+            Delete
+        </md-button>
+
+        <span flex></span>
+
+        <md-button
+          md-no-ink
+          class="md-primary"
+          ng-disabled="$todoEdit.disableCancelButton();"
+          ng-click="$todoEdit.actionClose();"
+          aria-label="Cancel" >
+            Cancel
+        </md-button>
+
+        <md-button
+          md-no-ink
+          class="md-raised md-primary has-progress"
+          ng-disabled="$todoEdit.disableSaveButton();"
+          ng-click="$todoEdit.actionConfirmSaveTask();"
+          aria-label="Save" >
+            Save
+        </md-button>
+
+    </peach-modal-footer>
+
+</peach-modal>

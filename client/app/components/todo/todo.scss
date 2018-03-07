@@ -1,0 +1,22 @@
+@import '../../app';
+
+#page_frame {
+
+  #todo-list-page {
+
+    .line-through {
+      text-decoration: line-through;
+
+      .due-date {
+        color: inherit;
+      }
+      
+    }
+
+    .due-date {
+      color: $font-color-due;
+    }
+
+  }
+
+}

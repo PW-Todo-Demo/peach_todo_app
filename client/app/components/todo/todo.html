@@ -4,6 +4,11 @@
 
         <h1>TODO List</h1>
 
+        <peach-page-header-options
+          ng-if="!$todo.blockers.initializing"
+          options="$todo.headerOptions" >
+        </peach-page-header-options>
+
     </peach-page-header>
 
     <peach-message ng-if="$todo.info.message" type="{{ $todo.info.type }}">
@@ -16,8 +21,24 @@
 
             <md-list>
 
-                <md-list-item ng-repeat="task in $todo.tasks">
-                    <span>{{ ::task.description }}</span>
+                <md-list-item ng-repeat="task in $todo.tasks" class="md-2-line md-no-proxy">
+                    <div class="md-list-item-text" layout="column" ng-class="{'line-through': task.is_complete}">
+                        <h3>
+                            {{ :: task.description }}
+                        </h3>
+                        <p>
+                            <span>Assigned to: {{ :: task.assignedUsername }}</span>
+                            <span ng-if="::task.due_date" class="due-date">Due date: {{ :: task.due_date }}</span>
+                            <span ng-if="::!task.due_date">No due date set</span>
+                        </p>
+                    </div>
+                    <md-button
+                      md-no-ink
+                      class="md-secondary md-accent"
+                      ng-click="$todo.actionOpenTaskModal(task.id)"
+                      aria-label="Edit">
+                        Edit
+                    </md-button>
                     <md-checkbox
                       class="md-secondary"
                       ng-model="task.is_complete"

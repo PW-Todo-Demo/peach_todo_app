@@ -1,0 +1,25 @@
+<md-dialog flex="80" flex-sm="60" flex-md="45" flex-gt-md="35" flex-gt-lg="25">
+
+    <md-dialog-content class="text-center">
+
+        <span ng-if="::$vm.editedTask.id">
+            Are you sure you want to update this task?
+        </span>
+
+        <span ng-if="::!$vm.editedTask.id">
+            Are you sure you want to create task?
+        </span>
+
+    </md-dialog-content>
+
+    <md-dialog-actions layout="row" layout-align="center center">
+        <md-button class="md-primary" ng-click="$vm.actionCancelDialog();" aria-label="CANCEL">
+            <span>CANCEL</span>
+        </md-button>
+        <md-button class="md-primary" ng-click="$vm.actionSave();" aria-label="SAVE">
+            <span>SAVE</span>
+        </md-button>
+    </md-dialog-actions>
+
+</md-dialog>
+        

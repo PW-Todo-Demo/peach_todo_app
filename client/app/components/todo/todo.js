@@ -1,12 +1,14 @@
 import tasksService from '../../common/services/tasks-service/tasks-service';
-import { Task } from '../../common/models/task/task';
+// import { Task } from '../../common/models/task/task';
 import { DEFAULT_INFO_TIMEOUT, DEFAULT_NG_MODEL_OPTIONS, MESSAGE_TYPE_ERROR, MESSAGE_TYPE_INFO } from '../../app.const';
 import _ from 'lodash';
+import './todo.scss';
 
 class TodoController {
 
-  constructor($log, $q, $tasks, $timeout) {
+  constructor($location, $log, $q, $tasks, $timeout) {
 
+    this.$location = $location;
     this.$log = $log;
     this.$q = $q;
     this.$tasks = $tasks;
@@ -16,6 +18,7 @@ class TodoController {
       api_processing: false,
       initializing: true
     };
+    this.headerOptions = [];
     this.info = {
       message: null,
       type: MESSAGE_TYPE_INFO
@@ -29,13 +32,31 @@ class TodoController {
 
   activate() {
 
-    this.$tasks.load()
+    this.headerOptions = [
+      {
+        callback: this.actionOpenTaskModal.bind(this),
+        label: 'Add Task'
+      }
+    ];
+
+    this.$tasks.load(null, {includes: 'users(id,first_name,last_name)'})
       .then((tasks) => {
         this.tasks = tasks;
       })
       .finally(() => {
         this.blockers.initializing = false;
       });
+
+  }
+
+  actionOpenTaskModal(taskId = 'new') {
+
+    this.$timeout(
+      () => {
+        this.$location.path('/todo/' + taskId).search('');
+        return;
+      }
+    );
 
   }
 
@@ -75,24 +96,16 @@ class TodoController {
 
   onTaskStatusChange(task = null) {
 
-    if (Task.isValid(task)) {
+    this.blockers.api_processing = true;
 
-      this.blockers.api_processing = true;
-
-      return this.$tasks.save(task)
-        .catch((error) => {
-          task.toggleStatus(); // revert is_complete change on error
-          this.handleError(error, true);
-        })
-        .finally(() => {
-          this.blockers.api_processing = false;
-        });
-
-    } else {
-
-      return this.$q.resolve();
-
-    }
+    return this.$tasks.save(task)
+      .catch((error) => {
+        task.toggleStatus(); // revert is_complete change on error
+        this.handleError(error, true);
+      })
+      .finally(() => {
+        this.blockers.api_processing = false;
+      });
 
   }
 
@@ -103,7 +116,7 @@ class TodoController {
 
 }
 
-TodoController.$inject = ['$log', '$q', tasksService.serviceName, '$timeout'];
+TodoController.$inject = ['$location', '$log', '$q', tasksService.serviceName, '$timeout'];
 
 export default {
   controller: TodoController,
