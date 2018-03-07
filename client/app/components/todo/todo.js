@@ -1,13 +1,14 @@
-import tasksService from '../../common/services/tasks-service/tasks-service';
-// import { Task } from '../../common/models/task/task';
-import { DEFAULT_INFO_TIMEOUT, DEFAULT_NG_MODEL_OPTIONS, MESSAGE_TYPE_ERROR, MESSAGE_TYPE_INFO } from '../../app.const';
+import InitializeService from '../../common/services/initialize-service/initialize-service';
+import TasksService from '../../common/services/tasks-service/tasks-service';
+import {DEFAULT_INFO_TIMEOUT, DEFAULT_NG_MODEL_OPTIONS, MESSAGE_TYPE_ERROR, MESSAGE_TYPE_INFO} from '../../app.const';
 import _ from 'lodash';
 import './todo.scss';
 
 class TodoController {
 
-  constructor($location, $log, $q, $tasks, $timeout) {
+  constructor($initialize, $location, $log, $q, $tasks, $timeout) {
 
+    this.$initialize = $initialize;
     this.$location = $location;
     this.$log = $log;
     this.$q = $q;
@@ -39,19 +40,27 @@ class TodoController {
       }
     ];
 
-    this.$tasks.load(null, {includes: 'users(id,first_name,last_name)'})
+    this.$initialize.ready()
+      .then(() => {
+        return this.$tasks.load(null, {includes: 'users(id,first_name,last_name)'});
+      })
       .then((tasks) => {
         this.tasks = tasks;
+        return;
+      })
+      .catch((error) => {
+        return this.handleError(error);
       })
       .finally(() => {
         this.blockers.initializing = false;
+        return;
       });
 
   }
 
   actionOpenTaskModal(taskId = 'new') {
 
-    this.$timeout(
+    return this.$timeout(
       () => {
         this.$location.path('/todo/' + taskId).search('');
         return;
@@ -116,7 +125,14 @@ class TodoController {
 
 }
 
-TodoController.$inject = ['$location', '$log', '$q', tasksService.serviceName, '$timeout'];
+TodoController.$inject = [
+  InitializeService.service_name,
+  '$location',
+  '$log',
+  '$q',
+  TasksService.service_name,
+  '$timeout'
+];
 
 export default {
   controller: TodoController,

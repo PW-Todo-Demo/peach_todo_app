@@ -1,5 +1,5 @@
-import tasksService from '../../common/services/tasks-service/tasks-service';
-import usersService from '../../common/services/users-service/users-service';
+import TasksService from '../../common/services/tasks-service/tasks-service';
+import UsersService from '../../common/services/users-service/users-service';
 import { Task } from '../../common/models/task/task';
 import {
   DEFAULT_INFO_TIMEOUT, DEFAULT_LOCATION_ID, DEFAULT_NG_MODEL_OPTIONS,
@@ -266,9 +266,9 @@ TodoEditController.$inject = [
   '$mdDialog',
   '$q',
   '$routeParams',
-  tasksService.serviceName,
+  TasksService.service_name,
   '$timeout',
-  usersService.serviceName
+  UsersService.service_name
 ];
 
 export default {

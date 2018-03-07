@@ -510,10 +510,11 @@ function buildCombinedResults() {
       // and try to find if we didn't parse any row with the user id exactly the same as in this row parsed from second query results
       // if we find such row in already parsed data, that means we need to update it
       // it will have the data of results from first and second queries combined
-      if (row = _.find(combinedPaqlResults, (resultRow) => { return resultRow[0] === userId; })) {
+      var existingRow = _.find(combinedPaqlResults, function(resultRow) { return resultRow[0] === userId; });
+      if (existingRow) {
         // throw away what we have built in this iteration,
-        // use the already parsed 'row' from first query as the output for current row from the second query
-        combinedResultRow = row; 
+        // use the already parsed 'existingRow' from first query as the output for current row from the second query
+        combinedResultRow = existingRow; 
         // just update it with active tasks count from current row of the second query...
         combinedResultRow[3] = activeTasksCount;
         // and update percentage value with some calculated one

@@ -3,8 +3,8 @@ import { Task } from '../../models/task/task';
 import angular from 'angular';
 import 'ng-peach';
 
-const moduleName = 'tasksService';
-const serviceName = 'tasks';
+const MODULE_NAME = 'tasksService';
+const SERVICE_NAME = 'tasks';
 
 class TasksService extends BaseDataService {
 
@@ -16,11 +16,11 @@ class TasksService extends BaseDataService {
 
 TasksService.$inject = ['$peach', '$q'];
 
-angular.module(moduleName, ['ngPeach'])
-  .service(serviceName, TasksService);
+angular.module(MODULE_NAME, ['ngPeach'])
+  .service(SERVICE_NAME, TasksService);
 
 export default {
-  moduleName,
+  module_name: MODULE_NAME,
   service: TasksService,
-  serviceName: serviceName
+  service_name: SERVICE_NAME
 };

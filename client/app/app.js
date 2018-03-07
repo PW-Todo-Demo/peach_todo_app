@@ -22,7 +22,10 @@ import Todo from './components/todo/todo';
 import TodoEdit from './components/todo/todo-edit';
 
 // Services
+import AccountPrefsService from './common/services/account-prefs-service/account-prefs-service';
+import InitializeService from './common/services/initialize-service/initialize-service';
 import TasksService from './common/services/tasks-service/tasks-service';
+import TaskSchedulesService from './common/services/task-schedules-service/task-schedules-service';
 import UsersService from './common/services/users-service/users-service';
 
 angular.module(peachRc.framework.angular.module, [
@@ -34,8 +37,11 @@ angular.module(peachRc.framework.angular.module, [
   angularRoute,
   angularSanitize,
   'ngPeach.ui', // Need to fix this to export properly from ngPeach
-  TasksService.moduleName,
-  UsersService.moduleName
+  AccountPrefsService.module_name,
+  InitializeService.module_name,
+  TasksService.module_name,
+  TaskSchedulesService.module_name,
+  UsersService.module_name
 ])
   .config(routing)
   .controller(Home.controllerName, Home.controller)

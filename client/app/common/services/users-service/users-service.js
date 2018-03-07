@@ -3,8 +3,8 @@ import { User } from '../../models/user/user';
 import angular from 'angular';
 import 'ng-peach';
 
-const moduleName = 'usersService';
-const serviceName = 'users';
+const MODULE_NAME = 'usersService';
+const SERVICE_NAME = 'users';
 
 class UsersService extends BaseDataService {
 
@@ -25,11 +25,11 @@ class UsersService extends BaseDataService {
 
 UsersService.$inject = ['$peach', '$q'];
 
-angular.module(moduleName, ['ngPeach'])
-  .service(serviceName, UsersService);
+angular.module(MODULE_NAME, ['ngPeach'])
+  .service(SERVICE_NAME, UsersService);
 
 export default {
-  moduleName,
+  module_name: MODULE_NAME,
   service: UsersService,
-  serviceName: serviceName
+  service_name: SERVICE_NAME
 };
