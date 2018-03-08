@@ -58,7 +58,7 @@ async.waterfall(
                 return parentCallback();
               }
             );
-          }
+          };
         }
       ),
       function(error) {

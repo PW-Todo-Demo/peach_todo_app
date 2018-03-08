@@ -1,7 +1,8 @@
 import AccountPrefsService from '../account-prefs-service/account-prefs-service';
 import TaskSchedulesService from '../task-schedules-service/task-schedules-service';
 import {
-  ACCT_PREF_KEY_FOR_OVERDUE_TASKS_TASK_SCHEDULE, APP_ID, OVERDUE_TASKS_TASK_ID, OVERDUE_TASKS_TASK_SCHEDULE
+  ACCT_PREF_KEY_FOR_OVERDUE_TASKS_TASK_SCHEDULE, APP_ID, APP_PERMISSIONS, OVERDUE_TASKS_TASK_ID,
+  OVERDUE_TASKS_TASK_SCHEDULE
 } from '../../../app.const';
 import angular from 'angular';
 import _ from 'lodash';
@@ -20,6 +21,7 @@ class InitializeService {
     this.$taskSchedules = $taskSchedules;
 
     this.initPromise = this.activate();
+    this.permissions = {};
 
   }
 
@@ -30,10 +32,32 @@ class InitializeService {
         return _.get(response, 'is_admin', false);
       })
       .then((isAdmin) => {
-        if (isAdmin) {
+
+        let promises = {
+          account_admin: this.$q.resolve(isAdmin)
+        };
+
+        _.each(
+          APP_PERMISSIONS,
+          (appPermission) => {
+            promises[appPermission] = this.$peach.app.hasPermission(appPermission);
+            return;
+          }
+        );
+
+        return this.$q.all(promises);
+
+      })
+      .then((loadedPermissions) => {
+
+        this.permissions = loadedPermissions;
+
+        if (this.permissions.account_admin) {
           return this.$peach.account.getPrefs(ACCT_PREF_KEY_FOR_OVERDUE_TASKS_TASK_SCHEDULE);
         }
+
         return false;
+
       })
       .then((response) => {
 
@@ -72,7 +96,16 @@ class InitializeService {
 
   }
 
-  ready() {
+  getPermissions() {
+
+    return this.isReady()
+      .then(() => {
+        return _.cloneDeep(this.permissions);
+      });
+
+  }
+
+  isReady() {
     return this.initPromise;
   }
 

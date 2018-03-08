@@ -33,6 +33,7 @@
                         </p>
                     </div>
                     <md-button
+                      ng-if="::$todo.tasksEditingAllowed"
                       md-no-ink
                       class="md-secondary md-accent"
                       ng-click="$todo.actionOpenTaskModal(task.id)"

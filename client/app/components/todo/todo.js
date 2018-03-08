@@ -1,6 +1,9 @@
 import InitializeService from '../../common/services/initialize-service/initialize-service';
 import TasksService from '../../common/services/tasks-service/tasks-service';
-import {DEFAULT_INFO_TIMEOUT, DEFAULT_NG_MODEL_OPTIONS, MESSAGE_TYPE_ERROR, MESSAGE_TYPE_INFO} from '../../app.const';
+import {
+  APP_PERMISSION_TODO_ADMIN_API_KEY, DEFAULT_INFO_TIMEOUT, DEFAULT_NG_MODEL_OPTIONS, MESSAGE_TYPE_ERROR,
+  MESSAGE_TYPE_INFO
+} from '../../app.const';
 import _ from 'lodash';
 import './todo.scss';
 
@@ -25,7 +28,9 @@ class TodoController {
       type: MESSAGE_TYPE_INFO
     };
     this.ngModelOptions = DEFAULT_NG_MODEL_OPTIONS;
+    this.permissions = {};
     this.tasks = []; // initialize with empty array
+    this.tasksEditingAllowed = false;
 
     this.activate();
 
@@ -33,14 +38,27 @@ class TodoController {
 
   activate() {
 
-    this.headerOptions = [
-      {
-        callback: this.actionOpenTaskModal.bind(this),
-        label: 'Add Task'
-      }
-    ];
+    this.$initialize.isReady()
+      .then(() => {
+        return this.$initialize.getPermissions();
+      })
+      .then((permissionsCopy) => {
 
-    this.$initialize.ready()
+        this.permissions = permissionsCopy;
+        this.tasksEditingAllowed = Boolean(this.permissions[APP_PERMISSION_TODO_ADMIN_API_KEY]);
+
+        if (this.tasksEditingAllowed) {
+          this.headerOptions = [
+            {
+              callback: this.actionOpenTaskModal.bind(this),
+              label: 'Add Task'
+            }
+          ];
+        }
+
+        return;
+
+      })
       .then(() => {
         return this.$tasks.load(null, {includes: 'users(id,first_name,last_name)'});
       })
@@ -62,7 +80,9 @@ class TodoController {
 
     return this.$timeout(
       () => {
-        this.$location.path('/todo/' + taskId).search('');
+        if (this.tasksEditingAllowed) {
+          this.$location.path('/todo/' + taskId).search('');
+        }
         return;
       }
     );

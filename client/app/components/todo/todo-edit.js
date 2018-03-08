@@ -1,8 +1,9 @@
+import InitializeService from '../../common/services/initialize-service/initialize-service';
 import TasksService from '../../common/services/tasks-service/tasks-service';
 import UsersService from '../../common/services/users-service/users-service';
 import { Task } from '../../common/models/task/task';
 import {
-  DEFAULT_INFO_TIMEOUT, DEFAULT_LOCATION_ID, DEFAULT_NG_MODEL_OPTIONS,
+  APP_PERMISSION_TODO_ADMIN_API_KEY, DEFAULT_INFO_TIMEOUT, DEFAULT_LOCATION_ID, DEFAULT_NG_MODEL_OPTIONS,
   MESSAGE_TYPE_ERROR, MESSAGE_TYPE_INFO
 } from '../../app.const';
 import _ from 'lodash';
@@ -17,9 +18,10 @@ const TEMPLATES = {
 
 class TodoEditController {
 
-  constructor($document, $location, $log, $mdDialog, $q, $routeParams, $tasks, $timeout, $users) {
+  constructor($document, $initialize, $location, $log, $mdDialog, $q, $routeParams, $tasks, $timeout, $users) {
 
     this.$document = $document;
+    this.$initialize = $initialize;
     this.$location = $location;
     this.$log = $log;
     this.$mdDialog = $mdDialog;
@@ -51,7 +53,21 @@ class TodoEditController {
 
     let taskId = _.get(this.$routeParams, 'taskId', 'new');
 
-    return this.loadAccountUsers()
+    this.$initialize.isReady()
+      .then(() => {
+        return this.$initialize.getPermissions();
+      })
+      .then((permissionsCopy) => {
+
+        this.permissions = permissionsCopy;
+
+        if (!this.permissions[APP_PERMISSION_TODO_ADMIN_API_KEY]) {
+          return this.$q.reject('You are not permitted to use this page');
+        }
+
+        return this.loadAccountUsers();
+
+      })
       .then(() => {
 
         if (taskId !== 'new') {
@@ -170,7 +186,10 @@ class TodoEditController {
   }
 
   disableChanges() {
-    return this.blockers.api_processing;
+    return Boolean(
+      !this.permissions[APP_PERMISSION_TODO_ADMIN_API_KEY] ||
+      this.blockers.api_processing
+    );
   }
 
   disableCancelButton() {
@@ -261,6 +280,7 @@ class TodoEditController {
 
 TodoEditController.$inject = [
   '$document',
+  InitializeService.service_name,
   '$location',
   '$log',
   '$mdDialog',

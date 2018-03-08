@@ -75,7 +75,6 @@ function logData(message, extendedData) {
 
 }
 
-
 /**
  * Default success hadler function
  * @param  {Object} [data] any kind of data passed in - optional
