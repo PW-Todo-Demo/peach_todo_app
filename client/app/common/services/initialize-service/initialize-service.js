@@ -20,16 +20,26 @@ class InitializeService {
     this.$q = $q;
     this.$taskSchedules = $taskSchedules;
 
+    this.accountInfo = {};
     this.initPromise = this.activate();
     this.permissions = {};
+    this.userInfo = {};
 
   }
 
   activate() {
 
-    return this.$peach.account.getInfo()
+    return this.$q.all({
+      account: this.$peach.account.getInfo(),
+      user: this.$peach.user.getInfo()
+    })
       .then((response) => {
-        return _.get(response, 'is_admin', false);
+
+        this.accountInfo = response.account;
+        this.userInfo = response.user;
+
+        return _.get(this.accountInfo, 'is_admin', false);
+
       })
       .then((isAdmin) => {
 
@@ -96,11 +106,29 @@ class InitializeService {
 
   }
 
+  getAccountInfo() {
+
+    return this.isReady()
+      .then(() => {
+        return _.cloneDeep(this.accountInfo);
+      });
+
+  }
+
   getPermissions() {
 
     return this.isReady()
       .then(() => {
         return _.cloneDeep(this.permissions);
+      });
+
+  }
+
+  getUserInfo() {
+
+    return this.isReady()
+      .then(() => {
+        return _.cloneDeep(this.userInfo);
       });
 
   }

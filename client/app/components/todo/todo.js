@@ -31,6 +31,7 @@ class TodoController {
     this.permissions = {};
     this.tasks = []; // initialize with empty array
     this.tasksEditingAllowed = false;
+    this.user = {};
 
     this.activate();
 
@@ -40,12 +41,16 @@ class TodoController {
 
     this.$initialize.isReady()
       .then(() => {
-        return this.$initialize.getPermissions();
+        return this.$q.all({
+          permissions: this.$initialize.getPermissions(),
+          user: this.$initialize.getUserInfo()
+        });
       })
-      .then((permissionsCopy) => {
+      .then((response) => {
 
-        this.permissions = permissionsCopy;
+        this.permissions = response.permissions;
         this.tasksEditingAllowed = Boolean(this.permissions[APP_PERMISSION_TODO_ADMIN_API_KEY]);
+        this.user = response.user;
 
         if (this.tasksEditingAllowed) {
           this.headerOptions = [
@@ -60,7 +65,13 @@ class TodoController {
 
       })
       .then(() => {
-        return this.$tasks.load(null, {includes: 'users(id,first_name,last_name)'});
+
+        let filters = !this.permissions[APP_PERMISSION_TODO_ADMIN_API_KEY] ?
+          {assigned_user_id: _.get(this.user, 'id', 0)} :
+          null;
+
+        return this.$tasks.load(filters, {includes: 'users(id,first_name,last_name)'});
+
       })
       .then((tasks) => {
         this.tasks = tasks;
