@@ -11,7 +11,7 @@ _ = lodash4; // get rid of old lodash, use latest one available on untrusted
 
 /* TRIGGER VARIABLES */
 
-var APP_API_KEY = 'todo_app';
+var APP_API_KEY = req.app_key;
 var ADMIN_PERMISSION_API_KEY = 'todo_admin';
 var GET_QUERY_API_LIMIT = 1000;
 var TASK_OBJECT_API_KEY = 'tdd_task';
