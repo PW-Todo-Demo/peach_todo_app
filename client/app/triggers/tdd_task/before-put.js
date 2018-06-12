@@ -11,121 +11,137 @@ _ = lodash4; // get rid of old lodash, use latest one available on untrusted
 
 /* TRIGGER VARIABLES */
 
+var API_BASE_URL = '/v1/accounts/' + req.account_id + '/';
 var APP_API_KEY = req.app_key;
 var ADMIN_PERMISSION_API_KEY = 'todo_admin';
 var GET_QUERY_API_LIMIT = 1000;
 var TASK_OBJECT_API_KEY = 'tdd_task';
 
-var apiUrl = '/v1/accounts/' + req.account_id + '/'; // account id is taken from trigger runner
 var collection = _.get(req, ['body', 'collection'], []);
 var filters = _.get(req, ['query', 'find'], {});
-var userPermissions = _.get(req, ['permissions', APP_API_KEY], []);
+var userPermissions = [];
 
 
 
 /* TRIGGER BODY */
 
-if (
-  !req.is_developer &&
-  (
-    _.isEmpty(userPermissions) ||
-    userPermissions.indexOf(ADMIN_PERMISSION_API_KEY) === -1
-  )
-) {
+if (!req.is_developer) {
 
-  try {
+  peach.get(
+    API_BASE_URL + 'apps/' + APP_API_KEY + '/permissions',
+    function(err, res) {
 
-    if (_.isString(filters)) {
+      if (err) {
+        defaultErrorHandler(err);
+        return;
+      }
 
-      filters = JSON.parse(filters);
-        
-      filters = {
-        $and: [
-          filters,
-          {assigned_user_id: req.user_id}
-        ]
-      };
+      userPermissions = _.map(_.get(res, ['permissions'], []), 'key');
 
-      defaultSuccessHandler({
-        query: _.extend({}, req.query, {find: JSON.stringify(filters)}),
-        body: _.pick(req.body, ['is_complete'])
-      });
+      if (userPermissions.indexOf(ADMIN_PERMISSION_API_KEY) === -1) {
 
-    } else if (!_.isEmpty(collection)) {
+        try {
 
-      var parsedCollection = [];
-
-      preloadTasks(
-        _.map(collection, 'id'),
-        function(preloadedTasks) {
-
-          _.each(
-            preloadedTasks,
-            function(task) {
-
-              if (task.assigned_user_id === req.user_id) {
-                parsedCollection.push(
-                  _.pick(
-                    _.find(collection, {id: task.id}),
-                    ['id', 'is_complete']
-                  )
+          if (_.isString(filters)) {
+      
+            filters = JSON.parse(filters);
+              
+            filters = {
+              $and: [
+                filters,
+                {assigned_user_id: req.user_id}
+              ]
+            };
+      
+            defaultSuccessHandler({
+              query: _.extend({}, req.query, {find: JSON.stringify(filters)}),
+              body: _.pick(req.body, ['is_complete'])
+            });
+      
+          } else if (!_.isEmpty(collection)) {
+      
+            var parsedCollection = [];
+      
+            preloadTasks(
+              _.map(collection, 'id'),
+              function(preloadedTasks) {
+      
+                _.each(
+                  preloadedTasks,
+                  function(task) {
+      
+                    if (task.assigned_user_id === req.user_id) {
+                      parsedCollection.push(
+                        _.pick(
+                          _.find(collection, {id: task.id}),
+                          ['id', 'is_complete']
+                        )
+                      );
+                    }
+      
+                    return;
+      
+                  }
                 );
+      
+                defaultSuccessHandler({
+                  body: _.extend({}, req.body, {collection: parsedCollection})
+                });
+      
               }
-
-              return;
-
+            );
+      
+          } else {
+      
+            if (_.get(req, ['body', 'is_complete'], null) === null) {
+      
+              defaultErrorHandler("You can only change the status of the assigned task.");
+      
+            } else {
+      
+              preloadTasks(
+                [_.get(req, ['params', 'id'], 0)],
+                function(preloadedTasks) {
+      
+                  if (preloadedTasks.length === 0 || preloadedTasks[0]['assigned_user_id'] !== req.user_id) {
+                    
+                    defaultErrorHandler("You can't edit this task, it is not assigned to you.");
+                    
+                  } else {
+      
+                    defaultSuccessHandler({
+                      body: _.extend(
+                        _.omit(
+                          preloadedTasks[0],
+                          ['id', 'assigned_user_id']
+                        ),
+                        {is_complete: req.body.is_complete}
+                      )
+                    });
+      
+                  }
+      
+                }
+              );
+      
             }
-          );
-
-          defaultSuccessHandler({
-            body: _.extend({}, req.body, {collection: parsedCollection})
-          });
-
+      
+          }
+      
+        } catch (ex) {
+      
+          defaultErrorHandler(ex);
+      
         }
-      );
-
-    } else {
-
-      if (_.get(req, ['body', 'is_complete'], null) === null) {
-
-        defaultErrorHandler("You can only change the status of the assigned task.");
-
+        
       } else {
 
-        preloadTasks(
-          [_.get(req, ['params', 'id'], 0)],
-          function(preloadedTasks) {
-
-            if (preloadedTasks.length === 0 || preloadedTasks[0]['assigned_user_id'] !== req.user_id) {
-              
-              defaultErrorHandler("You can't edit this task, it is not assigned to you.");
-              
-            } else {
-
-              defaultSuccessHandler({
-                body: _.extend(
-                  _.omit(
-                    preloadedTasks[0],
-                    ['id', 'assigned_user_id']
-                  ),
-                  {is_complete: req.body.is_complete}
-                )
-              });
-
-            }
-
-          }
-        );
-
+        defaultSuccessHandler();
+        
       }
 
     }
-
-  } catch (ex) {
-
-    defaultErrorHandler(ex);
-
-  }
+  );
 
 } else {
 
@@ -252,7 +268,7 @@ function handlePeachGetRespose(error, response, url, queryParams, successCb, err
 
 function preloadTasks(ids, parentCallback) {
 
-  var url = apiUrl + TASK_OBJECT_API_KEY;
+  var url = API_BASE_URL + TASK_OBJECT_API_KEY;
   var queryParams = {
     fields: 'id,assigned_user_id,description,due_date,is_complete,location_id',
     find: encodeFindParams({id: ids}),
